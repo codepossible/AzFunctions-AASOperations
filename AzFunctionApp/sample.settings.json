@@ -1,0 +1,25 @@
+{
+  "IsEncrypted": false,
+
+    "Values": {
+      "AzureWebJobsDashboard": "<AzureStorageAccountConnectionStringForAzureFunction>",
+      "AzureWebJobsStorage": "<AzureStorageAccountConnectionStringForAzureFunction>",
+
+      "DatabaseName": "DefaultAnalysisServicesDatabaseToProcess",
+
+      "ProcessPartitionQueue": "AzureQueueNameToPlaceParitionProcessingRequests",
+      "ProcessPartitionStatusTable": "AzureTableNameToTrackParitionProcessingRequests",
+      "ProcessTableQueue": "AzureQueueNameToPlaceTableProcessingRequests",
+      "ProcessTableStatusTable": "AzureTableNameToTrackTableProcessingRequests",
+
+      "ProcessingTrackingOutputMediaType": "",
+      "MaximumRetries": "3",
+      "WaitTimeInSeconds": "30",
+      "RetryWaitPattern": "Progressive"
+  },
+
+  "ConnectionStrings": {
+    "SsasTabularConnection": "AzureAnalysisServicesConnectionString"
+  }
+
+}
