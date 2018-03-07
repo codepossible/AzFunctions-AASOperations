@@ -5,7 +5,3 @@ This project processes tabular models hosted on a Azure Analysis Services instan
 Processing can be done at the model, table or partition level in a synchronous and asynchronous manner.
 
 The Azure Function App Exposes HTTP endpoints to perform the operations.
-
-
-
-
