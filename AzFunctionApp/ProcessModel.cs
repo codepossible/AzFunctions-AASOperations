@@ -16,6 +16,13 @@ namespace AzFunctionApp
     /// </summary>
     public static class ProcessModel
     {
+        /// <summary>
+        /// Process the specified tabular model.
+        /// </summary>
+        /// <param name="req">HTTP request</param>
+        /// <param name="databaseName">Name of the database to process</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Returns the result of the processing of the model</returns>
         [FunctionName("ProcessModel")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", 

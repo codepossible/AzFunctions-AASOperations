@@ -16,6 +16,17 @@ namespace AzFunctionApp
     /// </summary>
     public static class ProcessTabularModelProcessPartitionAysnc
     {
+        /// <summary>
+        ///  Queues the request to process the specified partition in the specified table in the specified database.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="databaseName"></param>
+        /// <param name="tableName"></param>
+        /// <param name="partitionName"></param>
+        /// <param name="queue">Queue to place the procesing request</param>
+        /// <param name="statusTable">Table to track the status of the processing request</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Returns the tracking information for the procesing request</returns>
         [FunctionName("AsyncProcessPartition")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", 
             Route = "ProcessTabularModel/{databaseName}/tables/{tableName}/partitions/{partitionName}/async")]
@@ -57,16 +68,11 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"C# Timer trigger function exception: {e.ToString()}");
+                log.Info($"Error occured tryingh to process partition - {databaseName}/{tableName}/{partitionName}. Details : {e.ToString()}");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
-
-            if (String.IsNullOrEmpty(outputMediaType))
-            {
-                return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());
-            }
-            else { return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo(), outputMediaType); }
-
+            
+            return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());            
         }
     }
 }

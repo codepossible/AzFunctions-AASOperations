@@ -14,8 +14,21 @@ namespace AzFunctionApp
 {    
     using Models;
  
+    /// <summary>
+    /// Azure function to return the status of the processing
+    /// </summary>
     public static class GetProcessingStatus
     {
+
+        /// <summary>
+        /// Returns the status of the asynchronous processing
+        /// </summary>
+        /// <param name="req">HTTP Request</param>
+        /// <param name="operation">Operation that is being tracked - model | table | partition </param>
+        /// <param name="statusTablePartitionKey">Partition key from the tracking information</param>
+        /// <param name="trackingId">tracking id from the tracking information</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Updated information about the processing or error, if not found or bad request </returns>
         [FunctionName("GetProcessingStatus")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, 
@@ -41,13 +54,13 @@ namespace AzFunctionApp
 
                     if (retrievedResult.Result != null)
                     {
-                        QueueMessageProcesssTabular processStatus = (QueueMessageProcesssTabular)retrievedResult.Result;
-                        if (String.IsNullOrEmpty(outputMediaType)) {
-                            return req.CreateResponse(HttpStatusCode.OK, processStatus.ToProcessingTrackingInfo());
-                         } else { return req.CreateResponse(HttpStatusCode.OK, processStatus.ToProcessingTrackingInfo(), outputMediaType); }
+                        /* Return result if found */
+                        QueueMessageProcesssTabular processStatus = (QueueMessageProcesssTabular)retrievedResult.Result;                      
+                        return req.CreateResponse(HttpStatusCode.OK, processStatus.ToProcessingTrackingInfo());                         
                     }
                     else
                     {
+                        /*  Return not found error if tracking info was not found */
                         return req.CreateResponse(HttpStatusCode.NotFound);
                     }
                 }
@@ -58,6 +71,7 @@ namespace AzFunctionApp
             }
             else
             {
+                /* invalid status table */
                 return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Unknown Operation specified");
             }
         }
@@ -70,8 +84,8 @@ namespace AzFunctionApp
 
             switch (operation.ToLower())
             {
-                case "nextbatch":
-                    tableName = ConfigurationManager.AppSettings["ProcessNextBatchStatusTable"];
+                case "model":
+                    tableName = ConfigurationManager.AppSettings["ProcessModelStatusTable"];
                     break;
                 case "table":
                     tableName = ConfigurationManager.AppSettings["ProcessTableStatusTable"];
@@ -92,4 +106,4 @@ namespace AzFunctionApp
             return statusTable;
         }
     }
-    }
+}

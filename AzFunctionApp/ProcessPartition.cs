@@ -16,6 +16,15 @@ namespace AzFunctionApp
     /// </summary>
     public static class ProcessPartition
     {
+        /// <summary>
+        /// Processes the specified partition in the specified table in the specified tabular database.
+        /// </summary>
+        /// <param name="req">HTTP request</param>
+        /// <param name="databaseName">Name of the tabular model database</param>
+        /// <param name="tableName">Name of the table</param>
+        /// <param name="partitionName">Name of the parition</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Returns the result of the processing of the partition</returns>
         [FunctionName("ProcessPartition")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", 
             Route = "ProcessTabularModel/{databaseName}/tables/{tableName}/partitions/{partitionName}")]
@@ -25,7 +34,7 @@ namespace AzFunctionApp
                 string partitionName, 
                 TraceWriter log)
         {
-            log.Info("Received request to process specific partition in " + databaseName + "/" + tableName + "/" + partitionName);
+            log.Info($"Received request to process specific partition in {databaseName}/{tableName}{partitionName} asynchronously.");
 
             try
             {

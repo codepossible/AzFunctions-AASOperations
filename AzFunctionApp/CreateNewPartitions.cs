@@ -21,6 +21,14 @@ namespace AzFunctionApp
     /// </summary>
     public static class CreateNewPartitions
     {
+        /// <summary>
+        /// Creates new paritions in the specified database and table based on specified partition information.
+        /// </summary>
+        /// <param name="req">HTTP request</param>
+        /// <param name="databaseName">Name of tabular model database</param>
+        /// <param name="tableName">Name of the Log</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Response if the paritions were create succesfully, else error</returns>
         [FunctionName("CreateNewPartitions")]
         public async static Task<HttpResponseMessage> Run([
             HttpTrigger(AuthorizationLevel.Function, "post", 
@@ -29,7 +37,7 @@ namespace AzFunctionApp
             string tableName,           
             TraceWriter log)
         {
-            log.Info("Received request to create new partitions in " + databaseName + "/" + tableName);
+            log.Info($"Received request to create new partitions in {databaseName} /{tableName}");
 
             try
             {
@@ -50,11 +58,11 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"C# HTTP trigger function exception: {e.ToString()}");
+                log.Info($"Error occured creating new partitions on {databaseName}/{tableName}: {e.ToString()}");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            return req.CreateResponse(HttpStatusCode.OK, "Created partitions on " + databaseName);
+            return req.CreateResponse(HttpStatusCode.OK, $"Created partitions on {databaseName}/{tableName}");
         }
     }
 }

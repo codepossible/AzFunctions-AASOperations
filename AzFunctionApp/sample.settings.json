@@ -1,21 +1,23 @@
 {
   "IsEncrypted": false,
 
-    "Values": {
-      "AzureWebJobsDashboard": "<AzureStorageAccountConnectionStringForAzureFunction>",
-      "AzureWebJobsStorage": "<AzureStorageAccountConnectionStringForAzureFunction>",
+  "Values": {
+    "AzureWebJobsDashboard": "<AzureStorageAccountConnectionStringForAzureFunction>",
+    "AzureWebJobsStorage": "<AzureStorageAccountConnectionStringForAzureFunction>",
 
-      "DatabaseName": "DefaultAnalysisServicesDatabaseToProcess",
+    "DatabaseName": "DefaultAnalysisServicesDatabaseToProcess",
 
-      "ProcessPartitionQueue": "AzureQueueNameToPlaceParitionProcessingRequests",
-      "ProcessPartitionStatusTable": "AzureTableNameToTrackParitionProcessingRequests",
-      "ProcessTableQueue": "AzureQueueNameToPlaceTableProcessingRequests",
-      "ProcessTableStatusTable": "AzureTableNameToTrackTableProcessingRequests",
+    "ProcessModelQueue": "AzureQueueNameToPlaceModelProcessingRequests",
+    "ProcessModelStatusTable": "AzureTableNameToTrackModelProcessingRequests",
+    "ProcessPartitionQueue": "AzureQueueNameToPlaceParitionProcessingRequests",
+    "ProcessPartitionStatusTable": "AzureTableNameToTrackParitionProcessingRequests",
+    "ProcessTableQueue": "AzureQueueNameToPlaceTableProcessingRequests",
+    "ProcessTableStatusTable": "AzureTableNameToTrackTableProcessingRequests",
 
-      "ProcessingTrackingOutputMediaType": "",
-      "MaximumRetries": "3",
-      "WaitTimeInSeconds": "30",
-      "RetryWaitPattern": "Progressive"
+    "ProcessingTrackingOutputMediaType": "",
+    "MaximumRetries": "3",
+    "WaitTimeInSeconds": "30",
+    "RetryWaitPattern": "Progressive"
   },
 
   "ConnectionStrings": {

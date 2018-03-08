@@ -14,6 +14,14 @@ namespace AzFunctionApp
     /// </summary>
     public static class ProcessTable
     {
+        /// <summary>
+        /// Processes the specified table in the specified tabular database.
+        /// </summary>
+        /// <param name="req">HTTP request</param>
+        /// <param name="databaseName">Name of the tabular model database</param>
+        /// <param name="tableName">Name of the table</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Returns the result of the processing of the table</returns>
         [FunctionName("ProcessTable")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", 
@@ -36,7 +44,7 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"C# HTTP trigger function exception: {e.ToString()}");
+                log.Info($"Error occured processing {databaseName}/{tableName}. Details: {e.ToString()}");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
             

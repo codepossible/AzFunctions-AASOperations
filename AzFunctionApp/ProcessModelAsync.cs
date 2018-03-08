@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using System.Net;
 using System.Net.Http;
 
@@ -12,34 +11,30 @@ namespace AzFunctionApp
     using Models;
 
     /// <summary>
-    /// Azure function to queue the request to process the table
+    /// Azure function to process the specified tabular model database asynchronously.
     /// </summary>
-    public static class ProcessTableAsync
+    public static class ProcessModelAsync
     {
         /// <summary>
-        /// Queues the request to process the specified table in the specified database.
+        /// Queues the request to process the specified tabular modular database.
         /// </summary>
         /// <param name="req">HTTP request</param>
-        /// <param name="databaseName">Name of the tabular database</param>
-        /// <param name="tableName">Name of the table to process</param>
         /// <param name="queue">Queue to place the procesing request</param>
         /// <param name="statusTable">Table to track the status of the processing request</param>
+        /// <param name="databaseName">Name of the database</param>
         /// <param name="log">Instance of log writer</param>
         /// <returns>Returns the tracking information for the procesing request</returns>
-        [FunctionName("AsyncProcessTable")]
+        [FunctionName("ProcessModelAsync")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "get",
-            Route = "ProcessTabularModel/{databaseName}/tables/{tableName}/async")]HttpRequestMessage req,
-                    string databaseName,
-                    string tableName,
-                    [Queue("%ProcessTableQueue%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> queue,
-                    [Table("%ProcessTableStatusTable%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> statusTable,
-                    TraceWriter log)
+            Route = "ProcessTabularModel/{databaseName}/async")]HttpRequestMessage req,
+                [Queue("%ProcessModelQueue%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> queue,
+                 [Table("%ProcessModelStatusTable%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> statusTable,
+                string databaseName,
+                TraceWriter log)
         {
-            log.Info("Received request to queue processing the table - " + databaseName + "/" + tableName);
-
-            string outputMediaType = ConfigurationManager.AppSettings["ProcessingTrackingOutputMediaType"];
-
+            log.Info($"Received request to process the model {databaseName} asynchronously. ");
+     
             QueueMessageProcesssTabular queuedMessage = null;
 
             try
@@ -52,7 +47,7 @@ namespace AzFunctionApp
                     TrackingId = trackingId,
                     EnqueuedDateTime = enqueuedDateTime,
                     Database = databaseName,
-                    Table = tableName,
+                    Table = null,
                     TargetDate = DateTime.Now,
                     Parition = null,
                     Status = "Queued",
@@ -61,21 +56,16 @@ namespace AzFunctionApp
                     ETag = "*"
                 };
 
-
                 queue.Add(queuedMessage);
                 statusTable.Add(queuedMessage);
             }
             catch (Exception e)
             {
-                log.Info($"C# HTTP trigger function exception: {e.ToString()}");
+                log.Info($"Error occured tryingh to process database- {databaseName}. Details : {e.ToString()}");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            if (String.IsNullOrEmpty(outputMediaType))
-            {
-                return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());
-            }
-            else { return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo(), outputMediaType); }
+            return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());
         }
     }
 }

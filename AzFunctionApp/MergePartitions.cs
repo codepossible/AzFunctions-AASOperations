@@ -1,15 +1,17 @@
+using System;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-using Microsoft.SqlServerAnaylsisServerTabularProcessing;
-using System.Configuration;
 
+using Microsoft.SqlServerAnaylsisServerTabularProcessing;
 using Microsoft.SqlServerAnaylsisServerTabularProcessing.Models;
+
 using Newtonsoft.Json;
-using System;
-using System.Threading.Tasks;
 
 namespace AzFunctionApp
 {
@@ -19,6 +21,14 @@ namespace AzFunctionApp
     /// </summary>
     public static class MergePartitions
     {
+        /// <summary>
+        /// Merges the list of partitions to a target partition in a specified tabular model.
+        /// </summary>
+        /// <param name="req">HTTP request</param>
+        /// <param name="databaseName">Name of database for the merge operation</param>
+        /// <param name="tableName">Name of the table operations</param>
+        /// <param name="log">Instance of log writer</param>
+        /// <returns>Success, if the merge operation completes successfully. else error</returns>
         [FunctionName("MergePartitions")]
         public static  async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function,  
                 "put", 

@@ -16,7 +16,13 @@ namespace AzFunctionApp
     /// Azure function to dequeue requests to process partitions and process them.
     /// </summary>
     public static class DequeueProcessPartition
-    { 
+    {
+        /// <summary>
+        /// Process the specified partition in the specficed table in the specified tabular model based on requests from Azure Queue
+        /// </summary>
+        /// <param name="myQueueItem">QueueItem</param>
+        /// <param name="statusTable">Azure Table to store the status information</param>
+        /// <param name="log">Instance of log writer</param>
         [FunctionName("DequeueProcessPartitionRequest")]
         public static void Run([QueueTrigger("%ProcessPartitionQueue%", Connection = "AzureWebJobsStorage")]string myQueueItem,
             [Table("%ProcessPartitionStatusTable%", Connection = "AzureWebJobsStorage")] CloudTable statusTable,
@@ -60,7 +66,7 @@ namespace AzFunctionApp
                 statusTable.Execute(updateOperation);
             }
 
-            log.Info("Completed Table processing for " + queueMessage?.Database + "/" + queueMessage?.Table);
+            log.Info($"Completed Partition processing for  {queueMessage?.Database}/{queueMessage?.Table}/{queueMessage?.Parition}");
 
         }
     }
