@@ -1,4 +1,4 @@
-# Azure Functions App Design for AAS Cube Processing
+# Azure Functions App Design for AAS Tabular Database Operations
 
 ## Implementation Details
 
@@ -133,10 +133,40 @@ The settings for the retry operations are as follows:
    - _ProgressiveRandom_: Adds a random amount of time between 1 to 10 seconds to progressive wait time.
 
 
+### **Developer Notes**
+On the development machine, it is stored in the file - "local.settings.json". This file is not checked into the repository due to nature of the content (secrets like connection string, keys). Howerver, the repository has a sample settings file called - "sample.settings.json". While developing/debugging, rename this file to - "local.settings.json" and your developer environment specific configuration values.
 
-On the development machine, it is stored in the file - "local.settings.json". 
+## Extending the code
 
+### Parition Creation Support
+If there is a need to create partitions through the Azure functions application for monthly or daily basis or create inital monthly paritions with repartition endpoint, there are helper functions available.
 
+To create partitions on monthly and daily basis for tables, the application needs to configured with the a source query string for each table with higher and lower bound, accepted as substitutable parameters. 
+
+An example included in the code for the table - "FactInternetSales" from AdventureWorks Analysis Services Database. To add additional table or modify the query for existing tables, current code modification and redeployment of Azure Functions is required.
+
+The code to be modified is in the Azure Functions application code - /Utility/QueryHelper.cs
+
+![alt text][queryhelperCsTabularModelOps]
+
+Sample code in QueryHelper.cs
+
+![alt text][queryhelperCsCodeSnippetTabularModelOps]
+
+The current code shows the source query for the metrics-internet-sales table, with start and end date to substituted for each partition.
+
+### Business Logic Support
+The business logic code for cube processing is hosted in Azure function code and within each endpoints. Additional business logic or modifications are recommended to be made at this layer or into a separate library.
+
+### Other References
+The application code for this application is heavily influenced by the following Open Source Project hosted on GitHub, provided by SQL Server Analysis Services Product Team,
+
+https://github.com/Microsoft/Analysis-Services/tree/master/AsPartitionProcessing
 
 
 [slnAASTabularModelOps]: ./images/AASTabularModelOps_VS_Soln.png "Visual Studio Solution - AAS Tabular Model Ops"
+
+[queryhelperCsTabularModelOps]:./images/AASTabularModelOps_VS_QueryHelper_cs.png "Visual Studio - QueryHelper.cs in Solution Explorer"
+
+[queryhelperCsCodeSnippetTabularModelOps]:./images/AASTabularModelOps_VS_QueryHelper_cs_CodeSnippet.png "Visual Studio - QueryHelper.cs - Code Snippet"
+
