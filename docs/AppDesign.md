@@ -54,6 +54,8 @@ In order to avoid the time out error, we support asynchornous way to invoking so
 
 The general pattern of invoking the operation is fairly standard. Call an endpoint to queue the request and receive a tracking information. Using the tracking information, query on the progress of the background operation using another endpoint on intervals,(Recommended interval: 30 - 60 seconds), till the status indicates a successful or unsuccessful completion.
 
+![alt text][asyncdesign]
+
 To support the asynchronous functionilty there are two new Azure function introduced for each kind of processing request. Taking the example of processing a table asynchronously. We have the following Azure Functions classes:
 
 *ProcessTabularModelProcessTableAsync*: Exposes a HTTP endpoint to accept request to process the table in the specified database. This request is placed in a table processing request queue and returns the tracking information to the client. The tracking information is returned using HTTP 202 (Accepted) status code.
@@ -169,4 +171,6 @@ https://github.com/Microsoft/Analysis-Services/tree/master/AsPartitionProcessing
 [queryhelperCsTabularModelOps]:./images/AASTabularModelOps_VS_QueryHelper_cs.png "Visual Studio - QueryHelper.cs in Solution Explorer"
 
 [queryhelperCsCodeSnippetTabularModelOps]:./images/AASTabularModelOps_VS_QueryHelper_cs_CodeSnippet.png "Visual Studio - QueryHelper.cs - Code Snippet"
+
+[asyncdesign]:./images/AASTabularModelOps_AsyncDesign.png "Tabular Model Operations - Asynchronous Design"
 
