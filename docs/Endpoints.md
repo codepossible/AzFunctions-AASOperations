@@ -24,3 +24,6 @@ azure function name | HTTP Operation | endpoints | path parameters | body | desc
 azure function name | HTTP Operation | endpoints | path parameters | body | description |
  ------------------ | -------------- | --------- | --------------- | ---- | ----------- | 
 |MergePartitions|PUT|`<host>://api/ProcessTabularModel/{databaseName}/tables/{tableName}/merge`|databaseName: Analysis service database hosting the table  tableName: Table containing the partition | `{ "TableName" : "name of the table where partitions exist - informational only", "TargetPartition":  "TableName": "name of the table where new partition is created -informational only",        "PartitionName":"name of the partition - required",   "SourceQuery": "Query to extract data from the source for the partition - required" },   "SourcePartitionNames": ["Partion name 1 to be erged", "Partion name 2 to be merged"]  }` | Merges the specified partitions from list of partitions to the specified partition. The partition is created, if it does not exist.|
+
+## See Also
+ - [Application Design](./docs/AppDesign.md)

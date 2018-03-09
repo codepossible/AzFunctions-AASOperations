@@ -27,3 +27,8 @@ If the scenario just requires tabular model refreshes, an alternative way is ava
 The following components are required:
 - Azure Analysis Services Instance
 - Function App (Version 1) (requires Full .NET Framework 4.6.1 or higher on Microsoft Windows host)
+- App Service plan, if you expect processes last more than 10 minutes.
+
+## See Also
+ - [Application Design](./docs/AppDesign.md)
+ - [Endpoint Description](./docs/Endpoints.md)

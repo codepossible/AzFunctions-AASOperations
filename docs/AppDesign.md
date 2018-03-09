@@ -166,6 +166,10 @@ The application code for this application is heavily influenced by the following
 https://github.com/Microsoft/Analysis-Services/tree/master/AsPartitionProcessing
 
 
+## See Also
+ - [Endpoint Description](./docs/Endpoints.md)
+
+
 [slnAASTabularModelOps]: ./images/AASTabularModelOps_VS_Soln.png "Visual Studio Solution - AAS Tabular Model Ops"
 
 [queryhelperCsTabularModelOps]:./images/AASTabularModelOps_VS_QueryHelper_cs.png "Visual Studio - QueryHelper.cs in Solution Explorer"
