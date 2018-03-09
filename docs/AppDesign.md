@@ -167,7 +167,7 @@ https://github.com/Microsoft/Analysis-Services/tree/master/AsPartitionProcessing
 
 
 ## See Also
- - [Endpoint Description](./docs/Endpoints.md)
+ - [Endpoint Description](./Endpoints.md)
 
 
 [slnAASTabularModelOps]: ./images/AASTabularModelOps_VS_Soln.png "Visual Studio Solution - AAS Tabular Model Ops"
