@@ -13,10 +13,9 @@ The code was developed using Visual Studio 2017 v15.4 in conjunction with Azure 
 The Azure Function code depends upon - Azure Functions and Web Jobs Tools, installed as an extension to Visual Studio 2017. This provides the SDK and facilitates local debugging of Azure functions prior to deployment to the Azure cloud.
 
 ### External Dependencies
-This code has an external dependencies on the following libraries:
+This code has has an external dependency on the following libraries:
 
 SQL Server Analysis Services - Analysis Service Management Objects (AMO). The library can be downloaded using the following link - https://docs.microsoft.com/en-us/sql/analysis-services/instances/install-windows/install-analysis-services-data-providers-amo-adomd-net-msolap
-
 
 ### Code Organization
 
@@ -31,7 +30,6 @@ The Azure Functions application is divided into two projects:
 
 * **SqlServerAnalysisServerTabularProcessing** : .NET Library, wrapping around the Analysis Service Management Objects library to simplify processing and partition management, such as creation and merging
 
-
 #### Application Flow - Synchronous Mode
 
 The application functionality is exposed to the client or the orchestration tool such as the Informatica as HTTP endpoints.
@@ -42,21 +40,22 @@ The HTTP requests to the Azure functions can carry the following information, de
 - Partition Name (some operations)
 - Source Query (some operations)
 
-Based on the these parameters, the Azure function is able to make calls to the appropriate database hosting the tabular model. These are blocking HTTP calls and can last between 30 seconds to several minutes (upto 2-3 minutes) depending on the size of the data to be processed. Successful completion return HTTP 200 response to the user with informational message. Errors are propogate using HTTP 500 error response with exception information.
 
-**IMPORTANT**: While hosting the Function App in Azure, the synchronous operations built using HTTP trigger are also subject to by 230 seconds (little less than 4 minutes) idle connection timeout on Azure Load Balancer. This is a hard limit and is not user configurable. Even though the operation continues to run in the background and will complete successfully, the client will receive a HTTP 500 error indicating a time our from the load balancer at end of timeout limit.
+Based on these parameters, the Azure function can make calls to the appropriate database hosting the tabular model. These are blocking HTTP calls and can last between 30 seconds to several minutes (up to 2-3 minutes) depending on the size of the data to be processed. Successful completion returns HTTP 200 response to the user with informational message. Errors are propagated using HTTP 500 error response with exception information.
 
-Given that limitation, while calling the synchornous operations ensure they do not  last more than 230 seconds. The operation that fit into this category would be creating new paritions, merging paritions or processing smaller tables (dimension) and partitions.
+**IMPORTANT**: While hosting the Function App in Azure, the synchronous operations built using HTTP trigger are also subject to by 230 seconds (little less than 4 minutes) idle connection timeout on Azure Load Balancer. This is a hard limit and is not user configurable. Even though the operation continues to run in the background and will complete successfully, the client will receive a HTTP 500 error indicating a timeout from the load balancer at end of timeout limit.
+
+Given that limitation, while calling the synchronous operations ensure they do not last more than 230 seconds. The operation that fit into this category would be creating new partitions, merging partitions or processing smaller tables (dimension) and partitions.
 
 #### Application Flow - Asynchronous Mode
 
-In order to avoid the time out error, we support asynchornous way to invoking some of the operations. 
+In order to avoid the time out error, we support asynchronous way to invoking some of the operations. 
 
-The general pattern of invoking the operation is fairly standard. Call an endpoint to queue the request and receive a tracking information. Using the tracking information, query on the progress of the background operation using another endpoint on intervals,(Recommended interval: 30 - 60 seconds), till the status indicates a successful or unsuccessful completion.
+The general pattern of invoking the operation is common. Call an endpoint to queue the request and receive a tracking information. Using the tracking information, query on the progress of the background operation using another endpoint on intervals, (Recommended interval: 30 - 60 seconds), till the status indicates a successful or unsuccessful completion.
 
 ![alt text][asyncdesign]
 
-To support the asynchronous functionilty there are two new Azure function introduced for each kind of processing request. Taking the example of processing a table asynchronously. We have the following Azure Functions classes:
+To support the asynchronous functionality there are two new Azure function introduced for each kind of processing request. Taking the example of processing a table asynchronously. We have the following Azure Functions classes:
 
 *ProcessTabularModelProcessTableAsync*: Exposes a HTTP endpoint to accept request to process the table in the specified database. This request is placed in a table processing request queue and returns the tracking information to the client. The tracking information is returned using HTTP 202 (Accepted) status code.
 
@@ -64,11 +63,11 @@ To support the asynchronous functionilty there are two new Azure function introd
 
 Azure Table and Queue for each of the operation is configured in the Application settings.
 
-Finally the class - *ProcessTabularModelGetProcessingStatus* provides HTTP endpoint which the client can use to query the status of the cube processing request using the tracking information.The request to this endpoint can return - HTTP 200 (if tracking record is found), HTTP 404 (if tracking record is not found) and HTTP 400 (if invalid parameters are sent).
+Finally the class - *ProcessTabularModelGetProcessingStatus* provides HTTP endpoint which the client can use to query the status of the cube processing request using the tracking information. The request to this endpoint can return - HTTP 200 (if tracking record is found), HTTP 404 (if tracking record is not found) and HTTP 400 (if invalid parameters are sent).
 
 For example:
 
-To request asynchornous processing of the "Suppliers" dimensions table in AdventureWorks sample anaysis services database, the request would look like as follows:
+To request asynchronous processing of the "Suppliers" dimensions table in AdventureWorks sample Analysis Services database, the request would look like as follows:
 
 ```
 https://azfunctionendpoint.azurewebsites.net/api/ProcessTabularModel/adventureworks/tables/Suppliers/async?code=key
@@ -100,7 +99,6 @@ Sample response may look as follows:
 }
 ```
 
-
 The status field indicates progress in processing and the valid values for the Status are as follows:
 - Queued
 - Running
@@ -109,10 +107,9 @@ The status field indicates progress in processing and the valid values for the S
  
  *Error Processing* and *Complete* are the two end states.
 
-
 ### Application Settings
 
-The database and connectivity information is stored external to the Azure functions application. Currently each deployment of Azure Function can support only one database server per deployment instance. This configuration is stored in Azure Functions Application Settings as Connection String with the key -  **_"SsasTabularConnection"_** .
+The database and connectivity information are stored external to the Azure functions application. Currently each deployment of Azure Function can support only one database server per deployment instance. This configuration is stored in Azure Functions Application Settings as Connection String with the key -  **_"SsasTabularConnection"_** .
 
 To support the Asynchornous processing, there are additional six settings:
 
@@ -134,16 +131,15 @@ The settings for the retry operations are as follows:
    - _Progressive_ : Increase the amount of time between the retries progressively. Example: First retry after 30 seconds, second retry - 2 * 30 seconds = 60 seconds, third retry - 3* 30 = 90 seconds and so on.
    - _ProgressiveRandom_: Adds a random amount of time between 1 to 10 seconds to progressive wait time.
 
-
 ### **Developer Notes**
-On the development machine, it is stored in the file - "local.settings.json". This file is not checked into the repository due to nature of the content (secrets like connection string, keys). Howerver, the repository has a sample settings file called - "sample.settings.json". While developing/debugging, rename this file to - "local.settings.json" and your developer environment specific configuration values.
+On the development machine, it is stored in the file - "local.settings.json". This file is not checked into the repository due to nature of the content (secrets like connection string, keys). However, the repository has a sample settings file called - "sample.settings.json". While developing/debugging, rename this file to - "local.settings.json" and your developer environment specific configuration values.
 
 ## Extending the code
 
-### Parition Creation Support
-If there is a need to create partitions through the Azure functions application for monthly or daily basis or create inital monthly paritions with repartition endpoint, there are helper functions available.
+### Partition Creation Support
+If there is a need to create partitions through the Azure functions application for monthly or daily basis or create initial monthly partitions with repartition endpoint, there are helper functions available.
 
-To create partitions on monthly and daily basis for tables, the application needs to configured with the a source query string for each table with higher and lower bound, accepted as substitutable parameters. 
+To create partitions on monthly and daily basis for tables, the application needs to be configured with the source query string for each table with higher and lower bound, accepted as substitutable parameters. 
 
 An example included in the code for the table - "FactInternetSales" from AdventureWorks Analysis Services Database. To add additional table or modify the query for existing tables, current code modification and redeployment of Azure Functions is required.
 
@@ -165,10 +161,8 @@ The application code for this application is heavily influenced by the following
 
 https://github.com/Microsoft/Analysis-Services/tree/master/AsPartitionProcessing
 
-
 ## See Also
  - [Endpoint Description](./Endpoints.md)
-
 
 [slnAASTabularModelOps]: ./images/AASTabularModelOps_VS_Soln.png "Visual Studio Solution - AAS Tabular Model Ops"
 
@@ -177,4 +171,5 @@ https://github.com/Microsoft/Analysis-Services/tree/master/AsPartitionProcessing
 [queryhelperCsCodeSnippetTabularModelOps]:./images/AASTabularModelOps_VS_QueryHelper_cs_CodeSnippet.png "Visual Studio - QueryHelper.cs - Code Snippet"
 
 [asyncdesign]:./images/AASTabularModelOps_AsyncDesign.png "Tabular Model Operations - Asynchronous Design"
+
 
