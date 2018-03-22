@@ -12,11 +12,6 @@ The code was developed using Visual Studio 2017 v15.4 in conjunction with Azure 
 
 The Azure Function code depends upon - Azure Functions and Web Jobs Tools, installed as an extension to Visual Studio 2017. This provides the SDK and facilitates local debugging of Azure functions prior to deployment to the Azure cloud.
 
-### External Dependencies
-This code has has an external dependency on the following libraries:
-
-SQL Server Analysis Services - Analysis Service Management Objects (AMO). The library can be downloaded using the following link - https://docs.microsoft.com/en-us/sql/analysis-services/instances/install-windows/install-analysis-services-data-providers-amo-adomd-net-msolap
-
 ### Code Organization
 
 #### Visual Studio Solution and Projects
