@@ -51,9 +51,9 @@ namespace AzFunctionApp
                 log.Info($"C# Timer trigger function exception: {e.ToString()}");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
-            
-            return req.CreateResponse(HttpStatusCode.OK, "Processed partition: " + databaseName + "/" +  tableName + "/" + partitionName);
-      
+
+            log.Info($"Successfully Processed Partition - {databaseName}/{tableName}/{partitionName}");
+            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully Processed Partition - {databaseName}/{tableName}/{partitionName}" });
         }
     }
 }

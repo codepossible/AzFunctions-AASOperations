@@ -36,7 +36,7 @@ namespace AzFunctionApp
                     [Table("%ProcessTableStatusTable%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> statusTable,
                     TraceWriter log)
         {
-            log.Info("Received request to queue processing the table - " + databaseName + "/" + tableName);
+            log.Info($"Received request to queue processing the table - {databaseName}/{tableName}");
 
             string outputMediaType = ConfigurationManager.AppSettings["ProcessingTrackingOutputMediaType"];
 

@@ -58,7 +58,8 @@ namespace AzFunctionApp
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            return req.CreateResponse(HttpStatusCode.OK, "Merged specified paritions in: " + databaseName + "/" + tableName);
+            log.Info($"Successfully merged specified partitions in: {databaseName}/{tableName}");
+            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully merged specified partitions in: {databaseName}/{tableName}" });
         }
     }
 }

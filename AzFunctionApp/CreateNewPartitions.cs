@@ -62,7 +62,8 @@ namespace AzFunctionApp
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            return req.CreateResponse(HttpStatusCode.OK, $"Created partitions on {databaseName}/{tableName}");
+            log.Info($"Created partitions on {databaseName}/{tableName}");
+            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Created partitions on {databaseName}/{tableName}" });
         }
     }
 }

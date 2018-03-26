@@ -47,7 +47,8 @@ namespace AzFunctionApp
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            return req.CreateResponse(HttpStatusCode.OK, "Processed model:" + databaseName);
+            log.Info($"Successfully Processed - {databaseName}");
+            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully Processed - {databaseName}" });
         }
     }
 }

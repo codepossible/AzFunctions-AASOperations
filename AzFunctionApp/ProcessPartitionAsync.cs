@@ -38,7 +38,7 @@ namespace AzFunctionApp
                  [Table("%ProcessPartitionStatusTable%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> statusTable,
                 TraceWriter log)
         {
-            log.Info("Received request to process specific partition in " + databaseName + "/" + tableName + "/" + partitionName);
+            log.Info($"Received request queue processing of partition - {databaseName}/{tableName}/{partitionName}");
 
             string outputMediaType = ConfigurationManager.AppSettings["ProcessingTrackingOutputMediaType"];
            

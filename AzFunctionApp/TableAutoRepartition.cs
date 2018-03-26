@@ -85,8 +85,8 @@ namespace ProcessTabularFunction
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            return req.CreateResponse(HttpStatusCode.OK, 
-                $"Repartitioned  {databaseName}/{tableName} + {maxPartitionCount} partitions from {targetDate.ToShortDateString()}");
+            return req.CreateResponse(HttpStatusCode.OK,
+                new { result = $"Repartitioned  {databaseName}/{tableName}  - {maxPartitionCount} partitions from {targetDate.ToShortDateString()}" });
         }
     }
 }

@@ -47,8 +47,9 @@ namespace AzFunctionApp
                 log.Info($"Error occured processing {databaseName}/{tableName}. Details: {e.ToString()}");
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
-            
-            return req.CreateResponse(HttpStatusCode.OK, "Processed table: " + databaseName + "/" + tableName);            
+
+            log.Info($"Successfully processed - {databaseName}/{tableName}");
+            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully Processed {databaseName}/{tableName}" });            
         }
     }
 }
