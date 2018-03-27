@@ -43,12 +43,13 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"C# HTTP trigger function exception: {e.ToString()}");
+                log.Error($"Error processing database - {databaseName}: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            log.Info($"Successfully Processed - {databaseName}");
-            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully Processed - {databaseName}" });
+            var successMessage = $"Successfully processed database - {databaseName}";
+            log.Info(successMessage);
+            return req.CreateResponse(HttpStatusCode.OK, new { result = successMessage });
         }
     }
 }

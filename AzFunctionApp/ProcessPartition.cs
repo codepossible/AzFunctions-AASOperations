@@ -48,12 +48,13 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"C# Timer trigger function exception: {e.ToString()}");
+                log.Error($"Error processing partition - {databaseName}/{tableName}/{partitionName}: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            log.Info($"Successfully Processed Partition - {databaseName}/{tableName}/{partitionName}");
-            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully Processed Partition - {databaseName}/{tableName}/{partitionName}" });
+            var successMessage = $"Successfully processed partition - {databaseName}/{tableName}/{partitionName}";
+            log.Info(successMessage);
+            return req.CreateResponse(HttpStatusCode.OK, new { result = successMessage });
         }
     }
 }

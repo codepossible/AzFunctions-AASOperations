@@ -58,12 +58,13 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"Error occured creating new partitions on {databaseName}/{tableName}: {e.ToString()}");
+                log.Error($"Error occured creating new partitions in {databaseName}/{tableName}: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            log.Info($"Created partitions on {databaseName}/{tableName}");
-            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Created partitions on {databaseName}/{tableName}" });
+            var successMessage = $"Created partitions on {databaseName}/{tableName}";
+            log.Info(successMessage);
+            return req.CreateResponse(HttpStatusCode.OK, new { result = successMessage });
         }
     }
 }

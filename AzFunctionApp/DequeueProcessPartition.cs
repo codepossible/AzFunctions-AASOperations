@@ -28,7 +28,7 @@ namespace AzFunctionApp
             [Table("%ProcessPartitionStatusTable%", Connection = "AzureWebJobsStorage")] CloudTable statusTable,
             TraceWriter log)
         {
-            log.Info($"Received Queue trigger to process partition : {myQueueItem}");
+            log.Info($"Received queue trigger to process partition : {myQueueItem}");
 
             QueueMessageProcesssTabular queueMessage = null;
 
@@ -56,9 +56,9 @@ namespace AzFunctionApp
 
             }
             catch (Exception e)
-            {
-                log.Info($"C# HTTP trigger function exception: {e.ToString()}");
-                log.Error("Error occured processing tabular model", e);
+            {                
+                log.Error($"Error occured processing partition - " +
+                    $"{queueMessage?.Database}/{queueMessage?.Table}/{queueMessage?.Parition} : {e.ToString()}", e);
                 queueMessage.Status = "Error Processing";
                 queueMessage.ErrorDetails = e.ToString();
                 queueMessage.ETag = "*";
@@ -66,7 +66,7 @@ namespace AzFunctionApp
                 statusTable.Execute(updateOperation);
             }
 
-            log.Info($"Completed Partition processing for  {queueMessage?.Database}/{queueMessage?.Table}/{queueMessage?.Parition}");
+            log.Info($"Successfully completed partition processing for  {queueMessage?.Database}/{queueMessage?.Table}/{queueMessage?.Parition}");
 
         }
     }

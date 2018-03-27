@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using System.Net;
 using System.Net.Http;
 
@@ -36,10 +35,8 @@ namespace AzFunctionApp
                     [Table("%ProcessTableStatusTable%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> statusTable,
                     TraceWriter log)
         {
-            log.Info($"Received request to queue processing the table - {databaseName}/{tableName}");
-
-            string outputMediaType = ConfigurationManager.AppSettings["ProcessingTrackingOutputMediaType"];
-
+            log.Info($"Received request to queue processing of table - {databaseName}/{tableName}");
+          
             QueueMessageProcesssTabular queuedMessage = null;
 
             try
@@ -61,21 +58,19 @@ namespace AzFunctionApp
                     ETag = "*"
                 };
 
-
                 queue.Add(queuedMessage);
                 statusTable.Add(queuedMessage);
+
+                log.Info($"Successfully queued request to process table - " +
+                    $"{databaseName}/{tableName} as {queuedMessage.PartitionKey}/{queuedMessage.RowKey}");
             }
             catch (Exception e)
             {
-                log.Info($"C# HTTP trigger function exception: {e.ToString()}");
+                log.Error($"Error occured trying to queue request to process table - {databaseName}//{tableName}: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            if (String.IsNullOrEmpty(outputMediaType))
-            {
-                return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());
-            }
-            else { return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo(), outputMediaType); }
+           return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());            
         }
     }
 }

@@ -65,10 +65,13 @@ namespace AzFunctionApp
 
                 queue.Add(queuedMessage);
                 statusTable.Add(queuedMessage);
+
+                log.Info($"Successfully queued request to process partition - " +
+                    $"{databaseName}//{tableName}/{partitionName} as {queuedMessage.PartitionKey}/{queuedMessage.RowKey}");
             }
             catch (Exception e)
             {
-                log.Info($"Error occured tryingh to process partition - {databaseName}/{tableName}/{partitionName}. Details : {e.ToString()}");
+                log.Error($"Error trying queue request to process partition - {databaseName}/{tableName}/{partitionName}. Details : {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
             

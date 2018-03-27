@@ -33,7 +33,7 @@ namespace AzFunctionApp
                 string databaseName,
                 TraceWriter log)
         {
-            log.Info($"Received request to process the model {databaseName} asynchronously. ");
+            log.Info($"Received request to process the model {databaseName} asynchronously.");
      
             QueueMessageProcesssTabular queuedMessage = null;
 
@@ -58,13 +58,15 @@ namespace AzFunctionApp
 
                 queue.Add(queuedMessage);
                 statusTable.Add(queuedMessage);
+
+                log.Info($"Successfully queued request to process database - {databaseName} as {queuedMessage.PartitionKey}/{queuedMessage.RowKey}");
             }
             catch (Exception e)
             {
-                log.Info($"Error occured tryingh to process database- {databaseName}. Details : {e.ToString()}");
+                log.Error($"Error occured trying to queue request to process database - {databaseName}. Details : {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
-
+            
             return req.CreateResponse(HttpStatusCode.OK, queuedMessage.ToProcessingTrackingInfo());
         }
     }

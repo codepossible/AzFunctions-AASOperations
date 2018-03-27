@@ -28,7 +28,7 @@ namespace AzFunctionApp
             [Table("%ProcessModelStatusTable%", Connection = "AzureWebJobsStorage")] CloudTable statusTable,
             TraceWriter log)
         {
-            log.Info($"Received Queue trigger to process partition : {myQueueItem}");
+            log.Info($"Received queue trigger to process database : {myQueueItem}");
 
             QueueMessageProcesssTabular queueMessage = null;
 
@@ -57,8 +57,7 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"Error processing tabular model: {e.ToString()}");
-                log.Error("Error occured processing tabular model", e);
+                log.Error($"Error occured processing database - {queueMessage?.Database} : {e.ToString()}", e);
                 queueMessage.Status = "Error Processing";
                 queueMessage.ErrorDetails = e.ToString();
                 queueMessage.ETag = "*";
@@ -66,7 +65,7 @@ namespace AzFunctionApp
                 statusTable.Execute(updateOperation);
             }
 
-            log.Info($"Completed Model processing for  + {queueMessage?.Database}");
+            log.Info($"Successfully completed database processing for  + {queueMessage?.Database}");
         }
     }
 }

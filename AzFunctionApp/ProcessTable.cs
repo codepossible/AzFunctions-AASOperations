@@ -30,7 +30,7 @@ namespace AzFunctionApp
                     string tableName,
                     TraceWriter log)
         {
-            log.Info("Received request to process the table - " + databaseName + "/" + tableName);
+            log.Info($"Received request to process the table - {databaseName}/{tableName}");
 
             try
             {
@@ -44,12 +44,13 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {
-                log.Info($"Error occured processing {databaseName}/{tableName}. Details: {e.ToString()}");
+                log.Error($"Error occured processing {databaseName}/{tableName}. Details: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            log.Info($"Successfully processed - {databaseName}/{tableName}");
-            return req.CreateResponse(HttpStatusCode.OK, new { result = $"Successfully Processed {databaseName}/{tableName}" });            
+            var successMessage = $"Successfully processed table - {databaseName}/{tableName}";
+            log.Info(successMessage);
+            return req.CreateResponse(HttpStatusCode.OK, new { result = successMessage });            
         }
     }
 }

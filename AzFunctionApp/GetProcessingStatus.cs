@@ -55,27 +55,37 @@ namespace AzFunctionApp
                     if (retrievedResult.Result != null)
                     {
                         /* Return result if found */
-                        QueueMessageProcesssTabular processStatus = (QueueMessageProcesssTabular)retrievedResult.Result;                      
+                        QueueMessageProcesssTabular processStatus = (QueueMessageProcesssTabular)retrievedResult.Result;
+                        log.Info($"Found status for {operation} process with tracking information: {statusTablePartitionKey}/{trackingId} | Status: {processStatus.Status}");
                         return req.CreateResponse(HttpStatusCode.OK, processStatus.ToProcessingTrackingInfo());                         
                     }
                     else
                     {
                         /*  Return not found error if tracking info was not found */
+                        log.Info($"Could not find status for {operation} process with tracking information: {statusTablePartitionKey}/{trackingId}");
                         return req.CreateResponse(HttpStatusCode.NotFound);
                     }
                 }
                 catch (Exception e)
                 {
+                    log.Error($"Error occurred retrieving status for {operation} process with tracking information: {statusTablePartitionKey}/{trackingId}", e);
                     return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
                 }
             }
             else
             {
                 /* invalid status table */
-                return req.CreateErrorResponse(HttpStatusCode.BadRequest, "Unknown Operation specified");
+                var errorMessage = $"Unknown operation - {operation}";
+                log.Info(errorMessage);
+                return req.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
             }
         }
 
+        /// <summary>
+        /// Returns the reference to Azure Table Storage for the operation type
+        /// </summary>
+        /// <param name="operation">Name of the operation in the request</param>
+        /// <returns>Reference of the Azure Table Storage</returns>
         private static CloudTable GetCloudTableByOperation(string operation)
         {
             CloudTable statusTable = null;
