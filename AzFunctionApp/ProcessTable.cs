@@ -19,18 +19,18 @@ namespace AzFunctionApp
         /// </summary>
         /// <param name="req">HTTP request</param>
         /// <param name="databaseName">Name of the tabular model database</param>
-        /// <param name="tableName">Name of the table</param>
+        /// <param name="tableList">Single table name or List of comma seperated table names</param>
         /// <param name="log">Instance of log writer</param>
         /// <returns>Returns the result of the processing of the table</returns>
         [FunctionName("ProcessTable")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", 
-            Route = "ProcessTabularModel/{databaseName}/tables/{tableName}")]HttpRequestMessage req, 
+            Route = "ProcessTabularModel/{databaseName}/tables/{tableList}")]HttpRequestMessage req, 
                     string databaseName, 
-                    string tableName,
+                    string tableList,
                     TraceWriter log)
         {
-            log.Info($"Received request to process the table - {databaseName}/{tableName}");
+            log.Info($"Received request to process the table - {databaseName}/{tableList}");
 
             try
             {
@@ -40,15 +40,33 @@ namespace AzFunctionApp
                     DatabaseName = databaseName ?? ConfigurationManager.AppSettings["DatabaseName"]
                 };
 
-                tabularModel.ProcessTable(tableName);
+                log.Info($"Starting table processing on {databaseName}/{tableList}");
+
+                if (tableList.Contains(","))
+                {
+
+                    log.Info($"Multiple table processing requested.");
+
+                    var tableNames = tableList.Split(',');
+                    if (tableNames?.Length > 0)
+                    {
+                        log.Info($"Sending request to process {tableNames?.Length} tables in {databaseName}.");
+                        tabularModel.ProcessTables(tableNames);
+                    }
+                }
+                else
+                {
+                    log.Info($"Single table processing requested.");
+                    tabularModel.ProcessTable(tableList);
+                }
             }
             catch (Exception e)
             {
-                log.Error($"Error occured processing {databaseName}/{tableName}. Details: {e.ToString()}", e);
+                log.Error($"Error occured processing {databaseName}/{tableList}. Details: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 
-            var successMessage = $"Successfully processed table - {databaseName}/{tableName}";
+            var successMessage = $"Successfully processed table - {databaseName}/{tableList}";
             log.Info(successMessage);
             return req.CreateResponse(HttpStatusCode.OK, new { result = successMessage });            
         }

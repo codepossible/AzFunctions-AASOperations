@@ -47,7 +47,7 @@ namespace AzFunctionApp
                 TableOperation updateOperation = TableOperation.InsertOrReplace(queueMessage);
                 statusTable.Execute(updateOperation);
 
-                tabularModel.ProcessPartition(queueMessage.Table, queueMessage.Parition);
+                tabularModel.ProcessPartition(queueMessage.Tables, queueMessage.Parition);
 
                 queueMessage.Status = "Complete";
                 queueMessage.ETag = "*";
@@ -58,7 +58,7 @@ namespace AzFunctionApp
             catch (Exception e)
             {                
                 log.Error($"Error occured processing partition - " +
-                    $"{queueMessage?.Database}/{queueMessage?.Table}/{queueMessage?.Parition} : {e.ToString()}", e);
+                    $"{queueMessage?.Database}/{queueMessage?.Tables}/{queueMessage?.Parition} : {e.ToString()}", e);
                 queueMessage.Status = "Error Processing";
                 queueMessage.ErrorDetails = e.ToString();
                 queueMessage.ETag = "*";
@@ -66,7 +66,7 @@ namespace AzFunctionApp
                 statusTable.Execute(updateOperation);
             }
 
-            log.Info($"Successfully completed partition processing for  {queueMessage?.Database}/{queueMessage?.Table}/{queueMessage?.Parition}");
+            log.Info($"Successfully completed partition processing for  {queueMessage?.Database}/{queueMessage?.Tables}/{queueMessage?.Parition}");
 
         }
     }

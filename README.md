@@ -1,5 +1,10 @@
 # Azure Function App for Azure Analysis Services Tabular Model Operations
 
+ ## Updates
+  - 2018-03-28: Initial Release for Community to use
+  - 2018-05-04: Added support to process (or queue request to process) multiple tables in a single HTTP request.
+
+## Project Brief
 This project allows the client to perform common operations on a Analysis Services tabular model database hosted on a Azure Analysis Services instance through an Azure Function App.
 
  The Azure Function App exposes HTTP endpoints to perform these common operations. Each Azure function deployment is associated (via application settinsg) with a single Azure Analysis Services instance. The operations can be performed in any tabular model hosted on that instance.
@@ -32,3 +37,4 @@ The following components are required:
 ## See Also
  - [Application Design](./docs/AppDesign.md)
  - [Endpoint Description](./docs/Endpoints.md)
+

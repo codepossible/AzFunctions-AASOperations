@@ -20,7 +20,7 @@ namespace AzFunctionApp
         /// </summary>
         /// <param name="req">HTTP request</param>
         /// <param name="databaseName">Name of the tabular database</param>
-        /// <param name="tableName">Name of the table to process</param>
+        /// <param name="tableList">Single table name or List of comma seperated table names</param>
         /// <param name="queue">Queue to place the procesing request</param>
         /// <param name="statusTable">Table to track the status of the processing request</param>
         /// <param name="log">Instance of log writer</param>
@@ -28,14 +28,14 @@ namespace AzFunctionApp
         [FunctionName("AsyncProcessTable")]
         public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "get",
-            Route = "ProcessTabularModel/{databaseName}/tables/{tableName}/async")]HttpRequestMessage req,
+            Route = "ProcessTabularModel/{databaseName}/tables/{tableList}/async")]HttpRequestMessage req,
                     string databaseName,
-                    string tableName,
+                    string tableList,
                     [Queue("%ProcessTableQueue%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> queue,
                     [Table("%ProcessTableStatusTable%", Connection = "AzureWebJobsStorage")] ICollector<QueueMessageProcesssTabular> statusTable,
                     TraceWriter log)
         {
-            log.Info($"Received request to queue processing of table - {databaseName}/{tableName}");
+            log.Info($"Received request to queue processing of table - {databaseName}/{tableList}");
           
             QueueMessageProcesssTabular queuedMessage = null;
 
@@ -49,7 +49,7 @@ namespace AzFunctionApp
                     TrackingId = trackingId,
                     EnqueuedDateTime = enqueuedDateTime,
                     Database = databaseName,
-                    Table = tableName,
+                    Tables = tableList,
                     TargetDate = DateTime.Now,
                     Parition = null,
                     Status = "Queued",
@@ -62,11 +62,11 @@ namespace AzFunctionApp
                 statusTable.Add(queuedMessage);
 
                 log.Info($"Successfully queued request to process table - " +
-                    $"{databaseName}/{tableName} as {queuedMessage.PartitionKey}/{queuedMessage.RowKey}");
+                    $"{databaseName}/{tableList} as {queuedMessage.PartitionKey}/{queuedMessage.RowKey}");
             }
             catch (Exception e)
             {
-                log.Error($"Error occured trying to queue request to process table - {databaseName}//{tableName}: {e.ToString()}", e);
+                log.Error($"Error occured trying to queue request to process table - {databaseName}//{tableList}: {e.ToString()}", e);
                 return req.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
             }
 

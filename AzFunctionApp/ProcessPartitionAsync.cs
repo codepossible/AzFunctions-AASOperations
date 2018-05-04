@@ -54,7 +54,7 @@ namespace AzFunctionApp
                     TrackingId = trackingId,
                     EnqueuedDateTime = enqueuedDateTime,
                     Database = databaseName,
-                    Table = tableName,
+                    Tables = tableName,
                     TargetDate = DateTime.Now,
                     Parition = partitionName,
                     Status = "Queued",

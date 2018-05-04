@@ -61,7 +61,25 @@ namespace AzFunctionApp
                 TableOperation updateOperation = TableOperation.InsertOrReplace(queueMessage);
                 statusTable.Execute(updateOperation);
 
-                tabularModel.ProcessTable(queueMessage.Table);
+                log.Info($"Starting table processing on {queueMessage.Database}/{queueMessage.Tables}");
+
+                if (queueMessage.Tables.Contains(","))
+                {
+
+                    log.Info($"Multiple table processing requested.");
+
+                    var tableNames = queueMessage.Tables.Split(',');
+                    if (tableNames?.Length > 0)
+                    {
+                        log.Info($"Sending request to process {tableNames?.Length} tables in {queueMessage.Database}.");
+                        tabularModel.ProcessTables(tableNames);
+                    }
+                }
+                else
+                {
+                    log.Info($"Single table processing requested.");
+                    tabularModel.ProcessTable(queueMessage.Tables);
+                }
 
                 queueMessage.Status = "Complete";
                 queueMessage.ETag = "*";
@@ -71,7 +89,7 @@ namespace AzFunctionApp
             }
             catch (Exception e)
             {                
-                log.Error($"Error occured processing database table - {queueMessage?.Database}/{queueMessage?.Table} : {e.ToString()}", e);
+                log.Error($"Error occured processing database table - {queueMessage?.Database}/{queueMessage?.Tables} : {e.ToString()}", e);
                 queueMessage.Status = "Error Processing";
                 queueMessage.ErrorDetails = e.ToString();
                 queueMessage.ETag = "*";
@@ -79,7 +97,7 @@ namespace AzFunctionApp
                 statusTable.Execute(updateOperation);
             }
 
-            log.Info($"Completed table processing for {queueMessage?.Database}/{queueMessage?.Table}");
+            log.Info($"Completed table processing for {queueMessage?.Database}/{queueMessage?.Tables}");
 
         }
     }

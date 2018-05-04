@@ -102,6 +102,43 @@ namespace Microsoft.SqlServerAnaylsisServerTabularProcessing
 
 
         /// <summary>
+        /// Process the specified table in the database
+        /// </summary>
+        /// <param name="tableNames">Names of tables to process</param>
+        /// <param name="dataOnly">flag to indicate, if only data needs to be refereshed </param>
+        public void ProcessTables(string[] tableNames, bool dataOnly = false)
+        {
+            if (tableNames?.Length > 0)
+            {
+                Server analysisServer = new Server();
+                try
+                {
+                    analysisServer.Connect(this.ConnectionString);
+                    Database database = analysisServer.Databases.GetByName(this.DatabaseName);
+                    Model model = database.Model;
+
+                    int countOfTablesToProcesss = 0;
+
+                    foreach (var tableName in tableNames)
+                    {
+                        Table tableToProcess = model.Tables.Find(tableName.Trim());
+
+                        if (tableToProcess != null)
+                        {
+                            tableToProcess.RequestRefresh(dataOnly ? RefreshType.DataOnly : RefreshType.Full);
+                            countOfTablesToProcesss++;
+                        }
+                    }
+
+                    // Save models only if there are tables to process
+                    if (countOfTablesToProcesss > 0) { ModelSaveWithRetries(model); }
+
+                }
+                finally { analysisServer.Disconnect(); }
+            }
+        }
+
+        /// <summary>
         /// Sequentially process the partitions in the specified table
         /// </summary>
         /// <param name="tableName">Name of the table</param>

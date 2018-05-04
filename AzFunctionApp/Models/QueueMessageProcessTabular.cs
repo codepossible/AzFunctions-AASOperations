@@ -26,9 +26,9 @@ namespace AzFunctionApp.Models
         public string Database { get; set; }
 
         /// <summary>
-        /// Table in the database where processing will take place.
+        /// A table or list of comma seperated tables in the database where processing will take place.
         /// </summary>
-        public string Table { get; set; }
+        public string Tables { get; set; }
 
         /// <summary>
         /// The partition in the table in the database where processing will take place.
