@@ -503,13 +503,18 @@ namespace Microsoft.SqlServerAnaylsisServerTabularProcessing
         /// <param name="waitDurationInSeconds"></param>
         private void ModelSaveWithRetries(Model model)
         {
+            Exception lastFailingException = null;
+            bool success = false;
+
             try
             {
                 model.SaveChanges();
+                success = true;
             }
-            catch 
+            catch (Exception initialException)
             {
-                bool success = false;
+                lastFailingException = initialException;
+                success = false;
                 int retryCount = 0;
                 while ((retryCount < this.NumberOfRetries) && (!success))
                 {
@@ -518,14 +523,19 @@ namespace Microsoft.SqlServerAnaylsisServerTabularProcessing
                         model.SaveChanges();
                         success = true;
                     }
-                    catch
+                    catch (Exception nextException)
                     {
+                        lastFailingException = nextException;
                         success = false;
                         retryCount++;
                         System.Threading.Thread.Sleep(this.GetWaitTimeBetweenRetries(retryCount));
                     }
                 }
             }
+
+            if (!success) { throw lastFailingException; }
+
+            return;
 
         }
 
